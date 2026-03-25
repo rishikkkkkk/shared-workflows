@@ -18,3 +18,4 @@ jobs:
         - run: npm run lint
 # Run tests (remove if project does not include test script
         - run: npm test
+        - run: echo "Shared workflow updated!"
