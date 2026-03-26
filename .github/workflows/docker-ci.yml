@@ -14,14 +14,15 @@ on:
         required: true
       DOCKER_PASSWORD:
         required: true
+      SLACK_WEBHOOK_URL:
+        required: true
 
 jobs:
   docker:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -33,6 +34,28 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ inputs.image_name }}:${{ inputs.tag }} .
 
+      # Trivy Scan
+      - name: Scan Image
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: ${{ secrets.DOCKER_USERNAME }}/${{ inputs.image_name }}:${{ inputs.tag }}
+          severity: CRITICAL,HIGH
+          exit-code: 1
+
       - name: Push Image
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/${{ inputs.image_name }}:${{ inputs.tag }}
+
+      - name: Slack Success
+        if: success()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"Image built & pushed successfully"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Slack Failure
+        if: failure()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"Pipeline failed (build/scan/push)"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
