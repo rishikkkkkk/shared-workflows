@@ -46,73 +46,71 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/${{ inputs.image_name }}:${{ inputs.tag }}
 
-      - name: Slack Success
-        if: success()
-        run: |
-          curl -X POST -H 'Content-type: application/json' \
-          --data "{
-            \"text\": \"Docker Workflow Success\",
-            \"blocks\": [
-              {
-                \"type\": \"section\",
-                \"text\": {
-                  \"type\": \"mrkdwn\",
-                  \"text\": \" *Workflow Succeeded*\"
-                }
-              },
-              {
-                \"type\": \"section\",
-                \"fields\": [
-                  { \"type\": \"mrkdwn\", \"text\": \"*Repo:* ${{ github.repository }}\" },
-                  { \"type\": \"mrkdwn\", \"text\": \"*Branch:* ${{ github.ref_name }}\" },
-                  { \"type\": \"mrkdwn\", \"text\": \"*Image:* ${{ inputs.image_name }}\" },
-                  { \"type\": \"mrkdwn\", \"text\": \"*Tag:* ${{ inputs.tag }}\" },
-                  { \"type\": \"mrkdwn\", \"text\": \"*Commit:* ${{ github.sha }}\" },
-                  { \"type\": \"mrkdwn\", \"text\": \"*Event:* ${{ github.event_name }}\" }
-                ]
-              },
-              {
-                \"type\": \"section\",
-                \"text\": {
-                  \"type\": \"mrkdwn\",
-                  \"text\": \" <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>\"
-                }
-              }
-            ]
-          }" \
-          ${{ secrets.SLACK_WEBHOOK_URL }}
-
       - name: Slack Failure
         if: failure()
         run: |
           curl -X POST -H 'Content-type: application/json' \
           --data "{
-            \"text\": \"Docker Workflow Failed\",
-            \"blocks\": [
+            \"attachments\": [
               {
-                \"type\": \"section\",
-                \"text\": {
-                  \"type\": \"mrkdwn\",
-                  \"text\": \" *Workflow Failed*\"
-                }
-              },
-              {
-                \"type\": \"section\",
+                \"color\": \"#ff0000\",
+                \"author_name\": \"${{ github.actor }}\",
+                \"title\": \"Tag Docker Image on Push using GitHub shared workflow\",
+                \"title_link\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",
                 \"fields\": [
-                  { \"type\": \"mrkdwn\", \"text\": \"*Repo:* ${{ github.repository }}\" },
-                  { \"type\": \"mrkdwn\", \"text\": \"*Branch:* ${{ github.ref_name }}\" },
-                  { \"type\": \"mrkdwn\", \"text\": \"*Image:* ${{ inputs.image_name }}\" },
-                  { \"type\": \"mrkdwn\", \"text\": \"*Tag:* ${{ inputs.tag }}\" },
-                  { \"type\": \"mrkdwn\", \"text\": \"*Commit:* ${{ github.sha }}\" },
-                  { \"type\": \"mrkdwn\", \"text\": \"*Event:* ${{ github.event_name }}\" }
-                ]
-              },
+                  {
+                    \"title\": \"Ref\",
+                    \"value\": \"${{ github.ref }}\",
+                    \"short\": true
+                  },
+                  {
+                    \"title\": \"Event\",
+                    \"value\": \"${{ github.event_name }}\",
+                    \"short\": true
+                  },
+                  {
+                    \"title\": \"Commit\",
+                    \"value\": \"${{ github.sha }}\",
+                    \"short\": true
+                  }
+                ],
+                \"text\": \"❌ *Workflow Failed*\\nPush failed for Image: ${{ inputs.image_name }} | <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Check the Run>\",
+                \"footer\": \"GitHub Actions CI/CD\"
+              }
+            ]
+          }" \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Slack Success
+        if: success()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{
+            \"attachments\": [
               {
-                \"type\": \"section\",
-                \"text\": {
-                  \"type\": \"mrkdwn\",
-                  \"text\": \" <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Check Logs>\"
-                }
+                \"color\": \"#36a64f\",
+                \"author_name\": \"${{ github.actor }}\",
+                \"title\": \"Docker Image Build Successful\",
+                \"title_link\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",
+                \"fields\": [
+                  {
+                    \"title\": \"Ref\",
+                    \"value\": \"${{ github.ref }}\",
+                    \"short\": true
+                  },
+                  {
+                    \"title\": \"Event\",
+                    \"value\": \"${{ github.event_name }}\",
+                    \"short\": true
+                  },
+                  {
+                    \"title\": \"Commit\",
+                    \"value\": \"${{ github.sha }}\",
+                    \"short\": true
+                  }
+                ],
+                \"text\": \"✅ Image built & pushed: ${{ inputs.image_name }}:${{ inputs.tag }}\",
+                \"footer\": \"GitHub Actions CI/CD\"
               }
             ]
           }" \
