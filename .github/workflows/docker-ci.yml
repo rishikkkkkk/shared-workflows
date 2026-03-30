@@ -76,6 +76,7 @@ jobs:
                 ],
                 \"text\": \"❌ *Workflow Failed*\\nPush failed for Image: ${{ inputs.image_name }} | <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Check the Run>\",
                 \"footer\": \"GitHub Actions CI/CD\"
+                \"footer_link\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",
               }
             ]
           }" \
@@ -111,6 +112,7 @@ jobs:
                 ],
                 \"text\": \"✅ Image built & pushed: ${{ inputs.image_name }}:${{ inputs.tag }}\",
                 \"footer\": \"GitHub Actions CI/CD\"
+                \"footer_link\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",
               }
             ]
           }" \
