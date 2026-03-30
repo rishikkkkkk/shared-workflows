@@ -50,12 +50,70 @@ jobs:
         if: success()
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"Image built & pushed successfully"}' \
+          --data "{
+            \"text\": \"Docker Workflow Success\",
+            \"blocks\": [
+              {
+                \"type\": \"section\",
+                \"text\": {
+                  \"type\": \"mrkdwn\",
+                  \"text\": \" *Workflow Succeeded*\"
+                }
+              },
+              {
+                \"type\": \"section\",
+                \"fields\": [
+                  { \"type\": \"mrkdwn\", \"text\": \"*Repo:* ${{ github.repository }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Branch:* ${{ github.ref_name }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Image:* ${{ inputs.image_name }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Tag:* ${{ inputs.tag }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Commit:* ${{ github.sha }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Event:* ${{ github.event_name }}\" }
+                ]
+              },
+              {
+                \"type\": \"section\",
+                \"text\": {
+                  \"type\": \"mrkdwn\",
+                  \"text\": \" <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>\"
+                }
+              }
+            ]
+          }" \
           ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Slack Failure
         if: failure()
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data '{"text":"Pipeline failed (build/scan/push)"}' \
+          --data "{
+            \"text\": \"Docker Workflow Failed\",
+            \"blocks\": [
+              {
+                \"type\": \"section\",
+                \"text\": {
+                  \"type\": \"mrkdwn\",
+                  \"text\": \" *Workflow Failed*\"
+                }
+              },
+              {
+                \"type\": \"section\",
+                \"fields\": [
+                  { \"type\": \"mrkdwn\", \"text\": \"*Repo:* ${{ github.repository }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Branch:* ${{ github.ref_name }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Image:* ${{ inputs.image_name }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Tag:* ${{ inputs.tag }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Commit:* ${{ github.sha }}\" },
+                  { \"type\": \"mrkdwn\", \"text\": \"*Event:* ${{ github.event_name }}\" }
+                ]
+              },
+              {
+                \"type\": \"section\",
+                \"text\": {
+                  \"type\": \"mrkdwn\",
+                  \"text\": \" <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Check Logs>\"
+                }
+              }
+            ]
+          }" \
           ${{ secrets.SLACK_WEBHOOK_URL }}
