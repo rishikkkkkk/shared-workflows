@@ -55,6 +55,7 @@ jobs:
               {
                 \"color\": \"#ff0000\",
                 \"author_name\": \"${{ github.actor }}\",
+                \"author_icon\": \"https://github.com/${{ github.actor }}.png\",
                 \"title\": \"Tag Docker Image on Push using GitHub shared workflow\",
                 \"title_link\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",
                 \"fields\": [
@@ -74,9 +75,10 @@ jobs:
                     \"short\": true
                   }
                 ],
-                \"text\": \"❌ *Workflow Failed*\\nPush failed for Image: ${{ inputs.image_name }} | <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Check the Run>\",
-                \"footer\": \"GitHub Actions CI/CD\"
-                \"footer_link\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",
+                \"text\": \"❌ *Workflow Failed*\\nPush failed for Image: ${{ inputs.image_name }}\\n<https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Check the Run>\",
+                \"footer\": \"🔗 GitHub Actions Run\",
+                \"footer_icon\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\",
+                \"ts\": $(date +%s)
               }
             ]
           }" \
@@ -91,6 +93,7 @@ jobs:
               {
                 \"color\": \"#36a64f\",
                 \"author_name\": \"${{ github.actor }}\",
+                \"author_icon\": \"https://github.com/${{ github.actor }}.png\",
                 \"title\": \"Docker Image Build Successful\",
                 \"title_link\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",
                 \"fields\": [
@@ -111,8 +114,9 @@ jobs:
                   }
                 ],
                 \"text\": \"✅ Image built & pushed: ${{ inputs.image_name }}:${{ inputs.tag }}\",
-                \"footer\": \"GitHub Actions CI/CD\"
-                \"footer_link\": \"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",
+                \"footer\": \"🔗 <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow>\",
+                \"footer_icon\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\",
+                \"ts\": $(date +%s)
               }
             ]
           }" \
